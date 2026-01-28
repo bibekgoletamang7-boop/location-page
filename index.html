@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share your location</title>
+</head>
+<body>
+
+<h2>Share your location</h2>
+<p>This survey will automatically capture your GPS location.</p>
+
+<button onclick="sendLocation()" style="font-size:18px;padding:12px;">
+  I consent — send my location
+</button>
+
+<p id="status"></p>
+
+<script>
+function sendLocation() {
+  const status = document.getElementById("status");
+  status.innerText = "Fetching location… please allow GPS.";
+
+  if (!navigator.geolocation) {
+    status.innerText = "GPS not supported on this device.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const gps = encodeURIComponent(lat + "," + lng);
+
+      const formURL =
+        "https://docs.google.com/forms/d/e/1FAIpQLSfY1NgEqLtKkYCos8ASsPDQBMVc8xV5rRH2DdMTIk8_EGymrA/viewform?usp=pp_url&entry.1970425621="
+        + gps;
+
+      window.location.href = formURL;
+    },
+    function(error) {
+      status.innerText =
+        "Location permission denied. Please enable location and try again.";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+</script>
+
+</body>
+</html>
