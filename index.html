@@ -18,22 +18,28 @@
 <script>
 function sendLocation() {
   const status = document.getElementById("status");
-  status.innerText = "Fetching location… please allow GPS.";
+  status.innerText = "Fetching fresh GPS location… please allow GPS.";
 
   if (!navigator.geolocation) {
     status.innerText = "GPS not supported on this device.";
     return;
   }
 
+  // Force fresh reading by disabling cache
   navigator.geolocation.getCurrentPosition(
     function(position) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const gps = encodeURIComponent(lat + "," + lng);
 
+      // timestamp to avoid Google Form caching
+      const ts = Date.now();
+
       const formURL =
-        "https://docs.google.com/forms/d/e/1FAIpQLSfY1NgEqLtKkYCos8ASsPDQBMVc8xV5rRH2DdMTIk8_EGymrA/viewform?usp=pp_url&entry.1970425621="
-        + gps;
+        "https://docs.google.com/forms/d/e/1FAIpQLSfY1NgEqLtKkYCos8ASsPDQBMVc8xV5rRH2DdMTIk8_EGymrA/viewform"
+        + "?usp=pp_url"
+        + "&entry.1970425621=" + gps
+        + "&ts=" + ts;
 
       window.location.href = formURL;
     },
@@ -43,7 +49,7 @@ function sendLocation() {
     },
     {
       enableHighAccuracy: true,
-      timeout: 10000,
+      timeout: 15000,
       maximumAge: 0
     }
   );
